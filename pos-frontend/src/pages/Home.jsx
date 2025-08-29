@@ -5,6 +5,9 @@ import MiniCard from '../components/home/MiniCard';
 import { BsCashCoin } from "react-icons/bs";
 import { GrInProgress } from "react-icons/gr";
 import RecentOrders from '../components/home/RecentOrders';
+import PopularDishes from '../components/home/PopularDishes';
+
+
 const Home = () => {
   return (
     <section className="bg-[#1f1f1f] h-[calc(100vh-5rem)] overflow-hidden flex gap-3">
@@ -19,7 +22,8 @@ const Home = () => {
       <RecentOrders />
       </div>
       {/* Right Part */}
-      <div className="flex-[2] bg-blue-600">
+      <div className="flex-[2] ">
+        <PopularDishes/>
 
       </div>
       <BottomNav />
