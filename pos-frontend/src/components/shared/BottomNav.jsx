@@ -4,15 +4,21 @@ import { IoRestaurantSharp } from "react-icons/io5";
 import { MdTableBar } from "react-icons/md";
 import { CgMoreO } from "react-icons/cg";
 import { BiSolidDish } from "react-icons/bi";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Modal from './Modal';
+import { setCustomer } from '../../redux/slices/customerSlice';
+import { useDispatch } from 'react-redux';
 const BottomNav = () => {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen ] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const [guestCount, setGuestCount] = useState(0);
+  const [name, setName] = useState();
+  const [phone, setPhone] = useState();
 
   const increment = () => setGuestCount((prev)=> prev + 1 );
 
@@ -21,27 +27,47 @@ const BottomNav = () => {
     if(guestCount <= 0 ) return;
     setGuestCount((prev)=> prev - 1 );
   }
+
+  const isActive = (path) => location.pathname === path;
+
+  const handleCreateOrder = () => {
+    dispatch(setCustomer({ name, phone, guests: guestCount}));
+    navigate("/tables")
+  }
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#262626] p-2 h-16 flex justify-around">   
-    <button onClick={() => navigate("/")}className=" flex items-center justify-center text-[#f5f5f5] bg-[#343434] w-[200px] rounded-[20px]"><FcHome  className="inline mr-2 size={15}"/> <p>Home</p></button>
+    <button 
+    onClick={() => navigate("/")}
+    className={`flex items-center justify-center font-bold ${
+      isActive("/") ? "text-[#f5f5f5] bg-[#343434]" : "text-[#ababab]"
+      } w-[300px] rounded-[20px]`} 
+      >
+    
+    <FcHome  className="inline mr-2 size={15}"/> <p>Home</p></button>
     <button onClick={() => navigate("/orders")}className=" flex items-center justify-center text-[#ababab] w-[200px] rounded-[20px]"><IoRestaurantSharp  className="inline mr-2 size={15}"/> <p>Orders</p></button>
     <button onClick={() => navigate("/tables")}className=" flex items-center justify-center text-[#ababab] w-[200px] rounded-[20px]"><MdTableBar className="inline mr-2 size={15}"/> <p>Tables</p></button>
     <button className=" flex items-center justify-center text-[#ababab] w-[200px] rounded-[20px]"><CgMoreO  className="inline mr-2 size={15}"/> <p>More</p></button>
     
-    <button onClick={openModal} 
-    className=" absolute bottom-6 bg-[#f6b100] text-[#f5f5f5] rounded-full p-3 items-center"><BiSolidDish size={30}/></button>
+      <button
+        disabled={isActive("/tables") || isActive("/menu")}
+        onClick={openModal}
+        className="absolute bottom-6 bg-[#F6B100] text-[#f5f5f5] rounded-full p-4 items-center"
+      >
+        <BiSolidDish size={40} />
+      </button>
     
     <Modal isOpen={isModalOpen} onClose={closeModal} title="Create order">
       <div >
         <label className="block text-[#ababab] mb-2 text-sm font-medium">Customer Name</label>
         <div className="flex items-center border border-[#333] rounded-[20px] p-2">
-          <input type="text" name="" placeholder="Enter customer name" id="" className="bg-transparent flex-1 text-white focus:outline-none"/>
+          <input value={name} onChane = {(e) => setName(e.target.value)}type="text" name="" placeholder="Enter customer name" id="" className="bg-transparent flex-1 text-white focus:outline-none"/>
         </div>
       </div>
       <div >
         <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">Phone Number</label>
         <div className="flex items-center border border-[#333] rounded-[20px] p-2">
-          <input type="number" name="" placeholder="Enter customer number" id="" className="bg-transparent flex-1 text-white focus:outline-none"/>
+          <input value={phone} onChane = {(e) => setPhone(e.target.value)}type="number" name="" placeholder="Enter customer number" id="" className="bg-transparent flex-1 text-white focus:outline-none"/>
         </div>
       </div>
       <div>
@@ -53,7 +79,7 @@ const BottomNav = () => {
         </div>
       </div>
       <div>
-        <button onClick={()=> navigate("/tables")} className="w-full bg-[#F6B100] text-[#f5f5f5] rounded-lg py-3 mt-8
+        <button onClick={handleCreateOrder} className="w-full bg-[#F6B100] text-[#f5f5f5] rounded-lg py-3 mt-8
         hover:bg-yellow-700">Create Order</button>
       </div>
     </Modal>
